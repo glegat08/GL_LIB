@@ -1,0 +1,6 @@
+.vs
+build
+out
+.gitattributes
+lib\CmakeFiles
+lib\CMakeCache.txt
