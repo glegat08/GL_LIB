@@ -2,5 +2,12 @@
 
 namespace Glib
 {
+	template<typename T>
+	class Factory
+	{
+	public:
 
+	private:
+
+	};
 }
