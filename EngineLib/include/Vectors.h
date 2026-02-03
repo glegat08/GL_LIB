@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <vector>
+#include "Random.h"
 
 namespace Glib
 {
@@ -25,34 +26,23 @@ namespace Glib
 			: m_row(row) , m_col(col)
 		{
 			m_data.resize(row, std::vector<int>(col, 0));
-			m_data.push_back({ row, col });
 		}
 
-		Matrix(std::initializer_list<int> list)
+		Matrix(std::initializer_list<std::initializer_list<int>> list)
 		{
-			int totalElements = list.size();
-			int dimension = static_cast<int>(std::sqrt(totalElements));
+			m_row = list.size();
+			m_col = list.begin()->size();
 
-			if (dimension * dimension != totalElements)
-				throw std::invalid_argument("Initializer list size must be a perfect square");
-
-			m_row = dimension;
-			m_col = dimension;
-			m_data.resize(m_row, std::vector<int>(m_col, 0));
-			auto it = list.begin();
-
-			for (int i = 0; i < m_row; ++i)
+			for (const auto& row : list)
 			{
-				for (int j = 0; j < m_col; ++j)
-				{
-					m_data[i][j] = *it++;
-				}
+				if (row.size() != m_col)
+					throw std::invalid_argument("Rows must have the same size");
 			}
-		}
 
-		~Matrix()
-		{
-			m_data.clear();
+			m_data.resize(m_row);
+			int i = 0;
+			for (const auto& row : list)
+				m_data[i++] = std::vector<int>(row);
 		}
 
 		void Dimension()
@@ -132,18 +122,50 @@ namespace Glib
 			}
 		}
 
-		int GetRow(const Matrix& m)
+		void RandomMatrix(Random& rng, int min, int max)
 		{
-			return m.m_row;
+			for (auto& row : m_data)
+				for (auto& elem : row)
+					elem = rng.get(min, max);
 		}
 
-		int GetCol(const Matrix& m)
+
+		int GetRow()
 		{
-			return m.m_col;
+			return m_row;
+		}
+
+		int GetCol()
+		{
+			return m_col;
 		}
 
 	private:
 		std::vector<std::vector<int>> m_data;
-		mutable int m_row, m_col;
+		int m_row, m_col;
 	};
+
+	//template<typename T>
+	//class Matrix
+	//{
+	//public:
+	//	Matrix(int row, int col) : m_row(row), m_col(col)
+	//	{
+	//		m_data = new  T[row * col];
+
+	//		for (int i = 0; i < row * col; ++i)
+	//			m_data[i] = T();
+	//	}
+
+	//	void Size() const
+	//	{
+	//		return m_data.size();
+	//	}
+
+
+
+	//private:
+	//	int m_row, m_col;
+	//	std::vector<std::vector<T>> m_data;
+	//};
 }
